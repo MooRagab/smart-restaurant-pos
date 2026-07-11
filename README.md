@@ -13,6 +13,8 @@ npm start
 
 The application is available at `http://localhost:4200` and redirects to `/orders`.
 
+Live deployment: [Sahm Food Smart Restaurant POS](https://mooragab.github.io/smart-restaurant-pos/)
+
 ## Commands
 
 ```bash
