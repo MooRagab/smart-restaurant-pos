@@ -1,6 +1,7 @@
+import { OperationalOrderStatus } from '../../../core/operations/order-status-operation';
+
 export type OrderId = string;
-export type OrderStatus =
-  'received' | 'preparing' | 'ready' | 'delivered' | 'completed' | 'cancelled';
+export type OrderStatus = OperationalOrderStatus;
 export type OrderChannel = 'walk-in' | 'delivery' | 'online';
 export type OrderPriority = 'normal' | 'high' | 'urgent';
 export type PaymentState = 'pending' | 'authorized' | 'paid' | 'failed' | 'refunded';

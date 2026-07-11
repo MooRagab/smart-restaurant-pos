@@ -8,8 +8,10 @@ import { MockOrdersRepository } from './data-access/mock-orders.repository';
 import { OrderLiveEventService } from './data-access/order-live-event.service';
 import { ORDERS_REPOSITORY } from './data-access/orders.repository';
 import { OrdersFacade } from './state/orders.facade';
+import { OrdersAiCoordinator } from './state/orders-ai.coordinator';
 import { KitchenOrdersCoordinator } from './state/kitchen-orders.coordinator';
 import { OrdersStore } from './state/orders.store';
+import { OrdersSimulationCoordinator } from '../simulation/state/orders-simulation.coordinator';
 
 export const ORDERS_ROUTES: Routes = [
   {
@@ -20,7 +22,9 @@ export const ORDERS_ROUTES: Routes = [
     providers: [
       OrdersStore,
       OrdersFacade,
+      OrdersAiCoordinator,
       KitchenOrdersCoordinator,
+      OrdersSimulationCoordinator,
       AiAssistantStore,
       AiAssistantFacade,
       AiRecommendationSimulatorService,

@@ -5,6 +5,7 @@ import { IdGenerator } from '../../shared/utilities/id-generator';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
+  private static readonly MAX_VISIBLE_NOTIFICATIONS = 5;
   private readonly notificationsSignal = signal<readonly AppNotification[]>([]);
   private readonly idGenerator = new IdGenerator();
 
@@ -13,7 +14,9 @@ export class NotificationService {
   show(message: string, tone: NotificationTone = 'info'): string {
     const id = this.idGenerator.next('notification');
     const notification: AppNotification = { id, message, tone, createdAt: new Date() };
-    this.notificationsSignal.update((current) => [...current, notification]);
+    this.notificationsSignal.update((current) =>
+      [...current, notification].slice(-NotificationService.MAX_VISIBLE_NOTIFICATIONS),
+    );
     return id;
   }
 

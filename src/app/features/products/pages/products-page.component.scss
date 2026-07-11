@@ -1,0 +1,98 @@
+.page-heading {
+  margin-bottom: 1.25rem;
+}
+.page-heading span {
+  color: var(--color-brand);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.page-heading h1 {
+  margin: 0.3rem 0 0.35rem;
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  letter-spacing: -0.04em;
+}
+.page-heading p {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: 0.82rem;
+}
+.result-status {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  color: var(--color-ink-subtle);
+  font-size: 0.62rem;
+}
+.state {
+  display: grid;
+  min-height: 18rem;
+  place-items: center;
+  align-content: center;
+  padding: 2rem;
+  color: var(--color-ink-muted);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: 0.8rem;
+  text-align: center;
+}
+.state h2 {
+  margin: 0.7rem 0 0.25rem;
+  color: var(--color-ink);
+  font-size: 1rem;
+}
+.state p {
+  margin: 0 0 0.8rem;
+  font-size: 0.72rem;
+}
+.state button {
+  min-height: 2.2rem;
+  padding: 0 0.7rem;
+  color: #fff;
+  background: var(--color-brand);
+  border: 0;
+  border-radius: 0.4rem;
+  font-size: 0.66rem;
+  font-weight: 750;
+}
+.spinner {
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 2px solid var(--color-brand-border);
+  border-top-color: var(--color-brand);
+  border-radius: 50%;
+  animation: spin 800ms linear infinite;
+}
+.selected {
+  display: grid;
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 10;
+  width: min(22rem, calc(100vw - 2rem));
+  padding: 0.8rem 1rem;
+  color: #fff;
+  background: var(--color-sidebar);
+  border-radius: 0.65rem;
+  box-shadow: var(--shadow-raised);
+  gap: 0.15rem;
+}
+.selected span,
+.selected small {
+  color: var(--color-sidebar-muted);
+  font-size: 0.6rem;
+}
+.selected strong {
+  font-size: 0.76rem;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

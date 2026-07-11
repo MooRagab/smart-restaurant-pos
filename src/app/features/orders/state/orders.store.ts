@@ -3,6 +3,10 @@ import { Injectable, computed, signal } from '@angular/core';
 import { AppError } from '../../../shared/types/app-error';
 import { AsyncState } from '../../../shared/types/async-state';
 import { KitchenLoad } from '../../kitchen/domain/kitchen.model';
+import type {
+  QueuedOperation,
+  QueueExecutionResult,
+} from '../../offline-queue/domain/queued-operation.model';
 import { OrderLiveEvent } from '../data-access/order-live-event.service';
 import {
   DEFAULT_ORDER_FILTERS,
@@ -30,12 +34,15 @@ export type OptimisticOrderSnapshot = Readonly<{
 
 @Injectable()
 export class OrdersStore {
+  private static readonly LIVE_EVENT_MEMORY_LIMIT = 256;
   private readonly entitiesSignal = signal<ReadonlyMap<OrderId, Order>>(new Map());
   private readonly orderedIdsSignal = signal<readonly OrderId[]>([]);
   private readonly filtersSignal = signal<OrderFilters>(DEFAULT_ORDER_FILTERS);
   private readonly selectedOrderIdSignal = signal<OrderId | null>(null);
   private readonly loadStateSignal = signal<AsyncState<true>>({ status: 'idle' });
   private readonly currentTimeSignal = signal(Date.now());
+  private readonly processedLiveEventIds = new Set<string>();
+  private readonly processedLiveEventOrder: string[] = [];
 
   readonly filters = this.filtersSignal.asReadonly();
   readonly selectedOrderId = this.selectedOrderIdSignal.asReadonly();
@@ -63,6 +70,8 @@ export class OrdersStore {
   }
 
   setOrders(orders: readonly Order[]): void {
+    this.processedLiveEventIds.clear();
+    this.processedLiveEventOrder.length = 0;
     this.entitiesSignal.set(new Map(orders.map((order) => [order.id, order])));
     this.orderedIdsSignal.set(orders.map((order) => order.id));
     this.loadStateSignal.set(
@@ -150,6 +159,9 @@ export class OrdersStore {
   }
 
   applyLiveEvent(event: OrderLiveEvent): void {
+    if (!this.rememberLiveEvent(event.id)) {
+      return;
+    }
     switch (event.type) {
       case 'order.created':
         this.addOrder(event.payload.order);
@@ -169,6 +181,21 @@ export class OrdersStore {
         });
         break;
     }
+  }
+
+  private rememberLiveEvent(eventId: string): boolean {
+    if (this.processedLiveEventIds.has(eventId)) {
+      return false;
+    }
+    this.processedLiveEventIds.add(eventId);
+    this.processedLiveEventOrder.push(eventId);
+    if (this.processedLiveEventOrder.length > OrdersStore.LIVE_EVENT_MEMORY_LIMIT) {
+      const oldest = this.processedLiveEventOrder.shift();
+      if (oldest !== undefined) {
+        this.processedLiveEventIds.delete(oldest);
+      }
+    }
+    return true;
   }
 
   applyKitchenLoad(load: KitchenLoad): void {
@@ -194,6 +221,43 @@ export class OrdersStore {
       }
       return next;
     });
+  }
+
+  applyRestoredOperation(operation: QueuedOperation): void {
+    const status =
+      operation.state === 'failed' ? operation.payload.fromStatus : operation.payload.toStatus;
+    const synchronizationState =
+      operation.state === 'completed'
+        ? 'synchronized'
+        : operation.state === 'failed'
+          ? 'failed'
+          : 'pending';
+    this.updateOrder(operation.entityId, (order) => ({
+      ...order,
+      status,
+      synchronizationState,
+      revision:
+        operation.state === 'completed'
+          ? operation.payload.expectedRevision + 1
+          : operation.payload.expectedRevision,
+    }));
+  }
+
+  reconcileQueueResult(result: QueueExecutionResult): void {
+    if (result.outcome === 'completed') {
+      this.confirmTransition(
+        result.operation.entityId,
+        result.operation.payload.toStatus,
+        result.confirmedRevision,
+      );
+      return;
+    }
+    this.updateOrder(result.operation.entityId, (order) => ({
+      ...order,
+      status: result.operation.payload.fromStatus,
+      synchronizationState: 'failed',
+      revision: result.operation.payload.expectedRevision,
+    }));
   }
 
   getOrder(orderId: OrderId): Order | undefined {

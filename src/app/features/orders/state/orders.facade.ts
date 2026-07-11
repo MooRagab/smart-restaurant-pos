@@ -1,8 +1,9 @@
 import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { interval, take } from 'rxjs';
+import { Subscription, interval, take } from 'rxjs';
 
 import { NotificationService } from '../../../core/notifications/notification.service';
+import { ConnectivityService } from '../../../core/connectivity/connectivity.service';
 import { AppError } from '../../../shared/types/app-error';
 import { IdGenerator } from '../../../shared/utilities/id-generator';
 import { OrderLiveEventService } from '../data-access/order-live-event.service';
@@ -18,6 +19,7 @@ import {
 import { validateStatusTransition } from '../domain/order-transition.policy';
 import { OrdersStore } from './orders.store';
 import { KitchenOrdersCoordinator } from './kitchen-orders.coordinator';
+import { OfflineQueueFacade } from '../../offline-queue/state/offline-queue.facade';
 
 @Injectable()
 export class OrdersFacade {
@@ -28,7 +30,10 @@ export class OrdersFacade {
   private readonly destroyRef = inject(DestroyRef);
   private readonly idGenerator = new IdGenerator();
   private readonly kitchenCoordinator = inject(KitchenOrdersCoordinator);
+  private readonly connectivity = inject(ConnectivityService);
+  private readonly offlineQueue = inject(OfflineQueueFacade);
   private readonly inFlightOrders = new Set<OrderId>();
+  private loadSubscription: Subscription | null = null;
 
   readonly orders = this.store.orders;
   readonly visibleOrders = this.store.visibleOrders;
@@ -46,17 +51,31 @@ export class OrdersFacade {
     interval(30_000)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.store.updateCurrentTime(Date.now()));
+    this.offlineQueue.results$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((result) => {
+      this.inFlightOrders.delete(result.operation.entityId);
+      this.store.reconcileQueueResult(result);
+      this.notifications.show(
+        result.outcome === 'completed'
+          ? `${result.operation.payload.orderNumber} synchronized successfully.`
+          : `${result.operation.payload.orderNumber} could not be synchronized and was restored.`,
+        result.outcome === 'completed' ? 'success' : 'error',
+      );
+    });
   }
 
   load(): void {
+    this.loadSubscription?.unsubscribe();
     this.store.setLoading();
-    this.repository
+    this.loadSubscription = this.repository
       .loadOrders()
       .pipe(take(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (orders) => {
           this.store.setOrders(orders);
           this.kitchenCoordinator.applyCurrentLoad();
+          for (const operation of this.offlineQueue.restoredOperations()) {
+            this.store.applyRestoredOperation(operation);
+          }
         },
         error: (error: AppError) => this.store.setLoadError(error),
       });
@@ -114,6 +133,23 @@ export class OrdersFacade {
       return;
     }
     this.inFlightOrders.add(orderId);
+    if (this.connectivity.state().mode !== 'online') {
+      this.offlineQueue.enqueueOrderStatus({
+        entityId: orderId,
+        payload: {
+          orderNumber: order.orderNumber,
+          fromStatus: snapshot.status,
+          toStatus: status,
+          expectedRevision: snapshot.revision,
+        },
+      });
+      this.inFlightOrders.delete(orderId);
+      this.notifications.show(
+        `${order.orderNumber} updated locally and added to the synchronization queue.`,
+        'warning',
+      );
+      return;
+    }
     this.repository
       .updateStatus({
         orderId,

@@ -1,0 +1,35 @@
+<div id="product-results" class="results" role="listbox" aria-label="Product search results">
+  @for (product of products(); track product.id) {
+    <button
+      #option
+      [id]="'product-option-' + product.id"
+      class="product"
+      type="button"
+      role="option"
+      [class.product--active]="$index === activeIndex()"
+      [class.product--unavailable]="product.availability === 'unavailable'"
+      [attr.aria-selected]="$index === activeIndex()"
+      [attr.aria-disabled]="product.availability === 'unavailable'"
+      (click)="select(product)"
+    >
+      <span class="product__icon" aria-hidden="true">{{ icon(product.icon) }}</span>
+      <span class="product__content">
+        <strong><app-highlight-text [text]="product.name" [query]="query()" /></strong>
+        <span class="product__meta">
+          <span>{{ product.preparationMinutes }} min</span>
+          <span>{{ product.popularity }}% popular</span>
+          <span class="capitalize">{{ product.availability }}</span>
+        </span>
+        <span class="tags">
+          @for (tag of product.dietaryTags; track tag) {
+            <small>{{ tag }}</small>
+          }
+          @for (allergen of product.allergens; track allergen) {
+            <small class="allergen">Contains {{ allergen }}</small>
+          }
+        </span>
+      </span>
+      <strong class="product__price">{{ currency(product.priceMinor) }}</strong>
+    </button>
+  }
+</div>

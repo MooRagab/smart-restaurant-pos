@@ -1,0 +1,50 @@
+@if (operations().length > 0) {
+  <section class="group" [attr.aria-labelledby]="state() + '-operations-title'">
+    <header>
+      <h2 [id]="state() + '-operations-title'">{{ title() }}</h2>
+      <span>{{ operations().length }}</span>
+    </header>
+    <div class="operations">
+      @for (operation of operations(); track operation.id) {
+        <article class="operation" [attr.data-state]="operation.state">
+          <div class="operation__status">
+            <span aria-hidden="true"></span><strong>{{ operation.state }}</strong>
+          </div>
+          <div class="operation__identity">
+            <strong>{{ operation.payload.orderNumber }}</strong
+            ><small>Order status change</small>
+          </div>
+          <div class="operation__transition">
+            <span>{{ operation.payload.fromStatus }}</span
+            ><b>→</b><span>{{ operation.payload.toStatus }}</span>
+          </div>
+          <dl>
+            <div>
+              <dt>Created</dt>
+              <dd>{{ date(operation.createdAt) }}</dd>
+            </div>
+            <div>
+              <dt>Retries</dt>
+              <dd>{{ operation.retryCount }}</dd>
+            </div>
+            <div>
+              <dt>Entity</dt>
+              <dd>{{ operation.entityId }}</dd>
+            </div>
+          </dl>
+          @if (operation.lastError) {
+            <p class="error">{{ operation.lastError.message }}</p>
+          }
+          @if (operation.state === 'failed') {
+            <div class="actions">
+              <button type="button" (click)="retryRequested.emit(operation.id)">Retry</button
+              ><button class="danger" type="button" (click)="removeRequested.emit(operation.id)">
+                Remove and reconcile
+              </button>
+            </div>
+          }
+        </article>
+      }
+    </div>
+  </section>
+}

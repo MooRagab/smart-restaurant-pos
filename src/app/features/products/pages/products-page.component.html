@@ -1,0 +1,73 @@
+<header class="page-heading">
+  <div>
+    <span>Catalog · {{ productCount() }} products</span>
+    <h1>Product Search</h1>
+    <p>Find Egyptian menu items quickly using filters or complete keyboard navigation.</p>
+  </div>
+</header>
+
+@let state = loadState();
+@if (state.status === 'loading' || state.status === 'idle') {
+  <section class="state" aria-busy="true">
+    <span class="spinner" aria-hidden="true"></span>
+    <h2>Loading menu catalog</h2>
+    <p>Preparing searchable product data…</p>
+  </section>
+} @else if (state.status === 'error') {
+  <section class="state" role="alert">
+    <strong>!</strong>
+    <h2>Products could not be loaded</h2>
+    <p>{{ state.error.message }}</p>
+    <button type="button" (click)="facade.load()">Retry</button>
+  </section>
+} @else {
+  <app-product-search-box
+    [query]="query()"
+    [expanded]="expanded()"
+    [activeDescendant]="activeDescendant()"
+    (queryChanged)="facade.setQuery($event)"
+    (keyPressed)="handleKey($event)"
+    (focused)="facade.open()"
+    (clearRequested)="facade.clear()"
+  />
+  <app-recent-searches
+    [searches]="recent()"
+    (selected)="facade.useRecent($event)"
+    (cleared)="facade.clearRecent()"
+  />
+  <app-product-filters
+    [filters]="filters()"
+    (categoryChanged)="setCategory($event)"
+    (availabilityChanged)="setAvailability($event)"
+  />
+
+  <div class="result-status" role="status" aria-live="polite">
+    <span>{{ result().totalMatches }} matching products</span>
+    @if (result().limited) {
+      <span>Showing the first {{ result().products.length }} results</span>
+    }
+  </div>
+
+  @if (result().products.length === 0) {
+    <section class="state">
+      <strong>○</strong>
+      <h2>No matching products</h2>
+      <p>Try another name, category, or availability filter.</p>
+      <button type="button" (click)="facade.clear()">Clear search</button>
+    </section>
+  } @else if (expanded()) {
+    <app-product-results
+      [products]="result().products"
+      [query]="appliedQuery()"
+      [activeIndex]="activeIndex()"
+      (selected)="selectProduct($event)"
+    />
+  }
+
+  @if (selectedProduct(); as product) {
+    <aside class="selected" aria-live="polite">
+      <span>Selected product</span><strong>{{ product.name }}</strong
+      ><small>{{ product.preparationMinutes }} min preparation · {{ product.availability }}</small>
+    </aside>
+  }
+}

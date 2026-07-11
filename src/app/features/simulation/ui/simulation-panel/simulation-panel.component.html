@@ -1,0 +1,60 @@
+<details class="panel">
+  <summary><span aria-hidden="true">⚙</span> Simulation panel</summary>
+  <div class="panel__body">
+    <p>Development only · deterministic controls</p>
+    <section aria-labelledby="order-simulation-title">
+      <h2 id="order-simulation-title">Orders</h2>
+      <div class="actions">
+        <button type="button" (click)="commandRequested.emit({ type: 'orders.add' })">
+          Add order
+        </button>
+        <button type="button" (click)="commandRequested.emit({ type: 'orders.status-update' })">
+          Trigger status
+        </button>
+        <button type="button" (click)="commandRequested.emit({ type: 'orders.payment-update' })">
+          Change payment
+        </button>
+      </div>
+    </section>
+    <section aria-labelledby="kitchen-simulation-title">
+      <h2 id="kitchen-simulation-title">Kitchen & AI</h2>
+      <div class="actions">
+        <button type="button" (click)="commandRequested.emit({ type: 'kitchen.increase' })">
+          Increase load
+        </button>
+        <button type="button" (click)="commandRequested.emit({ type: 'kitchen.decrease' })">
+          Decrease load
+        </button>
+        <button type="button" (click)="commandRequested.emit({ type: 'ai.force-success' })">
+          Force AI success
+        </button>
+        <button type="button" (click)="commandRequested.emit({ type: 'ai.force-failure' })">
+          Force AI failure
+        </button>
+      </div>
+    </section>
+    <section aria-labelledby="network-simulation-title">
+      <h2 id="network-simulation-title">Connectivity & recovery</h2>
+      <label
+        ><span>Connection</span
+        ><select (change)="setConnectivity($event)">
+          <option value="online">Online</option>
+          <option value="offline">Offline</option>
+          <option value="unstable">Unstable</option>
+        </select></label
+      >
+      <div class="actions">
+        <button type="button" (click)="commandRequested.emit({ type: 'queue.synchronize' })">
+          Synchronize queue
+        </button>
+        <button
+          class="danger"
+          type="button"
+          (click)="commandRequested.emit({ type: 'mock.reset' })"
+        >
+          Reset mock data
+        </button>
+      </div>
+    </section>
+  </div>
+</details>

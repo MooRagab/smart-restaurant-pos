@@ -1,15 +1,17 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { AiSimulationOutcome } from '../../ai-assistant/domain/ai-recommendation.model';
 import { AiAssistantFacade } from '../../ai-assistant/state/ai-assistant.facade';
 import { AiAssistantPanelComponent } from '../../ai-assistant/ui/ai-assistant-panel/ai-assistant-panel.component';
 import { OrderChannel, OrderPriority, OrderSort, OrderStatus } from '../domain/order.model';
 import { OrdersFacade } from '../state/orders.facade';
+import { OrdersAiCoordinator } from '../state/orders-ai.coordinator';
 import { OrderDetailDrawerComponent } from '../ui/order-detail-drawer/order-detail-drawer.component';
 import { OrderFiltersComponent } from '../ui/order-filters/order-filters.component';
 import { OrderListComponent } from '../ui/order-list/order-list.component';
 import { OrderSummaryComponent } from '../ui/order-summary/order-summary.component';
 import { OrderWorkspaceStateComponent } from '../ui/order-workspace-state/order-workspace-state.component';
+import { OrdersSimulationCoordinator } from '../../simulation/state/orders-simulation.coordinator';
 
 @Component({
   selector: 'app-orders-page',
@@ -41,8 +43,9 @@ export class OrdersPageComponent {
   protected readonly aiSlowStreaming = this.aiAssistant.slowStreaming;
 
   constructor() {
+    inject(OrdersSimulationCoordinator);
+    inject(OrdersAiCoordinator);
     this.facade.load();
-    effect(() => this.aiAssistant.selectOrder(this.selectedOrder()));
   }
 
   protected setStatus(status: OrderStatus | 'all'): void {

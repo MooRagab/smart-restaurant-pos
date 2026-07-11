@@ -10,6 +10,7 @@ import {
   OrderSort,
   OrderStatus,
 } from '../../domain/order.model';
+import { readEventValue } from '../../../../shared/utilities/dom-event';
 
 @Component({
   selector: 'app-order-filters',
@@ -32,14 +33,29 @@ export class OrderFiltersComponent {
   protected readonly priorities = ORDER_PRIORITIES;
 
   protected onSearch(event: Event): void {
-    this.searchChanged.emit((event.target as HTMLInputElement).value);
+    const value = readEventValue(event);
+    if (value !== null) {
+      this.searchChanged.emit(value);
+    }
   }
 
   protected onSort(event: Event): void {
-    this.sortChanged.emit((event.target as HTMLSelectElement).value as OrderSort);
+    const value = readEventValue(event);
+    if (isOrderSort(value)) {
+      this.sortChanged.emit(value);
+    }
   }
 
   protected label(value: string): string {
     return value === 'walk-in' ? 'Walk-in' : value.charAt(0).toUpperCase() + value.slice(1);
   }
+}
+
+function isOrderSort(value: unknown): value is OrderSort {
+  return (
+    value === 'newest' ||
+    value === 'oldest' ||
+    value === 'highest-priority' ||
+    value === 'longest-waiting'
+  );
 }

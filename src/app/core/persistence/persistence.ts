@@ -1,8 +1,8 @@
 import { InjectionToken } from '@angular/core';
 
 export type Persistence = {
-  read<T>(key: string): T | null;
-  write<T>(key: string, value: T): void;
+  read(key: string): unknown | null;
+  write(key: string, value: unknown): void;
   remove(key: string): void;
 };
 

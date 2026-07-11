@@ -44,6 +44,11 @@ export class KitchenFacade {
     this.publish(previousLoad, this.store.resetHistory());
   }
 
+  resetMockData(): void {
+    const previousLoad = this.load();
+    this.publish(previousLoad, this.store.resetMockData());
+  }
+
   private publish(previousLoad: KitchenLoad, load: KitchenLoad): void {
     this.loadChangedSubject.next({ type: 'kitchen.load-changed', load, previousLoad });
   }

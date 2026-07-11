@@ -5,12 +5,13 @@
   (click)="closed.emit()"
 ></button>
 <aside
+  #drawer
   class="drawer"
   role="dialog"
   aria-modal="true"
   tabindex="-1"
   [attr.aria-labelledby]="'order-title-' + order().id"
-  (keydown.escape)="closed.emit()"
+  (keydown)="handleKeydown($event)"
 >
   <header class="drawer__header">
     <div>

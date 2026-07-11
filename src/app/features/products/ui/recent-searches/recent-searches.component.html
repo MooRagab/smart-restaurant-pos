@@ -1,0 +1,9 @@
+@if (searches().length > 0) {
+  <section class="recent" aria-label="Recent product searches">
+    <span>Recent</span>
+    @for (search of searches(); track search.toLocaleLowerCase()) {
+      <button type="button" (click)="selected.emit(search)">↻ {{ search }}</button>
+    }
+    <button class="clear" type="button" (click)="cleared.emit()">Clear history</button>
+  </section>
+}

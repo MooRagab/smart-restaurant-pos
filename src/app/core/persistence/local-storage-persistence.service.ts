@@ -4,12 +4,12 @@ import { Persistence } from './persistence';
 
 @Injectable({ providedIn: 'root' })
 export class LocalStoragePersistenceService implements Persistence {
-  read<T>(key: string): T | null {
+  read(key: string): unknown | null {
     const value = localStorage.getItem(key);
-    return value === null ? null : (JSON.parse(value) as T);
+    return value === null ? null : JSON.parse(value);
   }
 
-  write<T>(key: string, value: T): void {
+  write(key: string, value: unknown): void {
     localStorage.setItem(key, JSON.stringify(value));
   }
 

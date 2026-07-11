@@ -22,6 +22,7 @@
           routerLinkActive="navigation__link--active"
           [routerLinkActiveOptions]="{ exact: true }"
           [attr.aria-label]="navigationCollapsed() ? item.label : null"
+          [attr.title]="navigationCollapsed() ? item.label : null"
           (click)="closeMobileNavigation()"
         >
           <span class="navigation__icon" aria-hidden="true">
@@ -83,6 +84,7 @@
           type="button"
           [attr.aria-label]="navigationCollapsed() ? 'Expand navigation' : 'Collapse navigation'"
           [attr.aria-expanded]="!navigationCollapsed()"
+          [attr.title]="navigationCollapsed() ? 'Expand navigation' : 'Collapse navigation'"
           (click)="toggleNavigation()"
         >
           <span class="menu-icon" aria-hidden="true"></span>
@@ -91,6 +93,7 @@
           class="icon-button mobile-toggle"
           type="button"
           aria-label="Open navigation"
+          title="Open navigation"
           [attr.aria-expanded]="mobileNavigationOpen()"
           (click)="toggleMobileNavigation()"
         >
@@ -108,12 +111,31 @@
       </div>
 
       <div class="header__end">
+        @if (developmentMode) {
+          <label class="connectivity-control">
+            <span>Simulation</span>
+            <select [value]="connection().mode" (change)="setConnectivityMode($event)">
+              <option value="online">Online</option>
+              <option value="offline">Offline</option>
+              <option value="unstable">Unstable</option>
+            </select>
+          </label>
+        }
         <a class="status-pill status-pill--pending" routerLink="/offline-queue">
           <span aria-hidden="true">↻</span>
-          <span
-            ><strong>{{ pendingCount() }}</strong> pending</span
-          >
+          <span>
+            @if (synchronizationProcessing()) {
+              <strong>{{ synchronizationProgress() }}%</strong> syncing
+            } @else {
+              <strong>{{ pendingCount() }}</strong> pending
+            }
+          </span>
         </a>
+        @if (failedCount() > 0) {
+          <a class="status-pill status-pill--failed" routerLink="/offline-queue">
+            <strong>{{ failedCount() }}</strong> failed
+          </a>
+        }
         <div
           class="status-pill"
           [class.status-pill--offline]="!connection().isOnline"
@@ -145,3 +167,7 @@
 </div>
 
 <app-toast-container />
+
+@if (developmentMode) {
+  <app-simulation-panel (commandRequested)="runSimulation($event)" />
+}

@@ -1,0 +1,24 @@
+<div class="search-box">
+  <span class="search-box__icon" aria-hidden="true">⌕</span>
+  <input
+    type="search"
+    role="combobox"
+    aria-label="Search menu products"
+    aria-autocomplete="list"
+    aria-controls="product-results"
+    [attr.aria-expanded]="expanded()"
+    [attr.aria-activedescendant]="activeDescendant()"
+    [value]="query()"
+    placeholder="Search koshari, hawawshi, drinks…"
+    autocomplete="off"
+    (focus)="focused.emit()"
+    (input)="onInput($event)"
+    (keydown)="onKeydown($event)"
+  />
+  @if (query().length > 0) {
+    <button type="button" aria-label="Clear product search" (click)="clearRequested.emit()">
+      ×
+    </button>
+  }
+  <kbd aria-hidden="true">⌘ K</kbd>
+</div>

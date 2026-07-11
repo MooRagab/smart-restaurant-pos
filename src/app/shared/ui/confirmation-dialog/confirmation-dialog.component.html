@@ -1,0 +1,27 @@
+<button
+  class="backdrop"
+  type="button"
+  tabindex="-1"
+  aria-label="Cancel confirmation"
+  (click)="cancelled.emit()"
+></button>
+<section
+  #dialog
+  class="dialog"
+  role="alertdialog"
+  aria-modal="true"
+  [attr.aria-labelledby]="titleId"
+  [attr.aria-describedby]="messageId"
+  tabindex="-1"
+  (keydown)="handleKeydown($event)"
+>
+  <span class="dialog__mark" [class.dialog__mark--danger]="dangerous()" aria-hidden="true">!</span>
+  <h2 [id]="titleId">{{ title() }}</h2>
+  <p [id]="messageId">{{ message() }}</p>
+  <div class="dialog__actions">
+    <button #cancelButton type="button" (click)="cancelled.emit()">Cancel</button>
+    <button type="button" [class.danger]="dangerous()" (click)="confirmed.emit()">
+      {{ confirmLabel() }}
+    </button>
+  </div>
+</section>

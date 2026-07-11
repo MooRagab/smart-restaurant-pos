@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, isDevMode, output } from '@angular/core';
 
 import { formatDate } from '../../../../shared/utilities/formatters';
+import { readEventChecked, readEventValue } from '../../../../shared/utilities/dom-event';
 import {
   AiRecommendationState,
   AiRecommendationType,
@@ -39,12 +40,20 @@ export class AiAssistantPanelComponent {
   }
 
   protected onOutcomeChange(event: Event): void {
-    this.simulationOutcomeChanged.emit(
-      (event.target as HTMLSelectElement).value as AiSimulationOutcome,
-    );
+    const outcome = readEventValue(event);
+    if (isAiSimulationOutcome(outcome)) {
+      this.simulationOutcomeChanged.emit(outcome);
+    }
   }
 
   protected onSlowChange(event: Event): void {
-    this.slowStreamingChanged.emit((event.target as HTMLInputElement).checked);
+    const checked = readEventChecked(event);
+    if (checked !== null) {
+      this.slowStreamingChanged.emit(checked);
+    }
   }
+}
+
+function isAiSimulationOutcome(value: unknown): value is AiSimulationOutcome {
+  return value === 'auto' || value === 'success' || value === 'failure' || value === 'empty';
 }

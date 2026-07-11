@@ -1,7 +1,7 @@
 import { DestroyRef, Injectable, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
-import { AppError } from '../../../shared/types/app-error';
+import { AppError, isAppError } from '../../../shared/types/app-error';
 import { IdGenerator } from '../../../shared/utilities/id-generator';
 import { Order } from '../../orders/domain/order.model';
 import { AiRecommendationSimulatorService } from '../data-access/ai-recommendation-simulator.service';
@@ -76,13 +76,13 @@ export class AiAssistantFacade {
     this.store.setLoading(order, request.id);
     this.streamSubscription = this.simulator.generate(order, this.controls.options()).subscribe({
       next: (event) => this.handleEvent(request, event),
-      error: (error: AppError) => {
+      error: (cause: unknown) => {
         if (!this.isActive(request)) {
           return;
         }
         this.activeRequest = null;
         this.streamSubscription = null;
-        this.store.setError(order, error);
+        this.store.setError(order, toAiError(cause));
       },
       complete: () => {
         if (this.isActive(request)) {
@@ -178,4 +178,14 @@ export class AiAssistantFacade {
       this.store.setCancelled(activeOrder);
     }
   }
+}
+
+function toAiError(cause: unknown): AppError {
+  return isAppError(cause)
+    ? cause
+    : {
+        code: 'unexpected',
+        message: 'The AI assistant stopped unexpectedly. Please retry.',
+        retryable: true,
+      };
 }

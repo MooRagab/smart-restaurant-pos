@@ -1,0 +1,28 @@
+<section class="filters" aria-label="Product filters">
+  <div class="categories" role="group" aria-label="Product category">
+    <button
+      type="button"
+      [class.active]="filters().category === 'all'"
+      (click)="categoryChanged.emit('all')"
+    >
+      All menu
+    </button>
+    @for (category of categories; track category) {
+      <button
+        type="button"
+        [class.active]="filters().category === category"
+        (click)="categoryChanged.emit(category)"
+      >
+        {{ label(category) }}
+      </button>
+    }
+  </div>
+  <label
+    ><span>Availability</span
+    ><select [value]="filters().availability" (change)="onAvailability($event)">
+      <option value="all">All products</option>
+      <option value="available">Available now</option>
+      <option value="unavailable">Unavailable</option>
+    </select></label
+  >
+</section>

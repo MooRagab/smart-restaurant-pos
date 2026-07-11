@@ -317,6 +317,35 @@
     background: var(--color-warning-soft);
     border-color: var(--color-warning-border);
   }
+
+  &--failed {
+    color: var(--color-danger);
+    background: var(--color-danger-soft);
+    border-color: var(--color-danger-border);
+  }
+}
+
+.connectivity-control {
+  display: grid;
+  gap: 0.1rem;
+
+  span {
+    color: var(--color-ink-subtle);
+    font-size: 0.55rem;
+    font-weight: 750;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  select {
+    min-height: 1.9rem;
+    padding: 0 0.4rem;
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.4rem;
+    font-size: 0.62rem;
+  }
 }
 
 .status-dot {
@@ -454,6 +483,10 @@
 
   .user__copy,
   .status-pill--pending span:last-child {
+    display: none;
+  }
+
+  .connectivity-control {
     display: none;
   }
 

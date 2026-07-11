@@ -1,12 +1,13 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+
+import { OfflineQueueFacade } from './offline-queue.facade';
 
 @Injectable({ providedIn: 'root' })
 export class OfflineQueueSummaryService {
-  private readonly pendingCountSignal = signal(0);
+  private readonly facade = inject(OfflineQueueFacade);
 
-  readonly pendingCount = this.pendingCountSignal.asReadonly();
-
-  setPendingCount(count: number): void {
-    this.pendingCountSignal.set(Math.max(0, Math.floor(count)));
-  }
+  readonly pendingCount = this.facade.pendingCount;
+  readonly failedCount = this.facade.failedCount;
+  readonly processing = this.facade.processing;
+  readonly progress = this.facade.progress;
 }

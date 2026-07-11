@@ -54,6 +54,12 @@ export class KitchenStore {
     return next;
   }
 
+  resetMockData(): KitchenLoad {
+    const next = createInitialKitchenLoad(new Date());
+    this.loadSignal.set(next);
+    return next;
+  }
+
   private replaceLoad(targetLoad: number): KitchenLoad {
     const current = this.loadSignal();
     return this.updateLoad(

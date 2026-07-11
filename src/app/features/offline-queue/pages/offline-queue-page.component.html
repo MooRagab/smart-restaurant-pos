@@ -1,0 +1,99 @@
+<header class="page-heading">
+  <div>
+    <span>Synchronization · Recovery</span>
+    <h1>Offline Queue</h1>
+    <p>Inspect locally saved operations and control synchronization after connectivity returns.</p>
+  </div>
+  <div class="connection" [attr.data-mode]="connectivity.state().mode">
+    <span aria-hidden="true"></span>{{ connectivity.label() }}
+  </div>
+</header>
+
+@if (developmentMode) {
+  <label class="simulation"
+    ><span>Connection simulation</span
+    ><select [value]="connectivity.state().mode" (change)="setConnectivity($event)">
+      <option value="online">Online</option>
+      <option value="offline">Offline</option>
+      <option value="unstable">Unstable</option>
+    </select></label
+  >
+}
+
+@if (facade.persistenceError(); as error) {
+  <div class="persistence-error" role="alert">{{ error.message }}</div>
+}
+
+<section class="summary" aria-label="Synchronization summary">
+  <article>
+    <span>Pending</span><strong>{{ facade.pendingCount() }}</strong
+    ><small>Waiting or processing</small>
+  </article>
+  <article>
+    <span>Failed</span><strong>{{ facade.failedCount() }}</strong
+    ><small>Manual action required</small>
+  </article>
+  <article>
+    <span>Completed</span><strong>{{ facade.completedCount() }}</strong
+    ><small>Synchronization history</small>
+  </article>
+  <article>
+    <span>Progress</span><strong>{{ facade.progress() }}%</strong
+    ><small>{{ facade.processing() ? 'Synchronizing now' : 'Processor idle' }}</small>
+  </article>
+</section>
+
+<div class="toolbar">
+  <button
+    type="button"
+    [disabled]="!connectivity.state().isOnline || facade.processing()"
+    (click)="facade.requestSynchronization()"
+  >
+    Synchronize now
+  </button>
+  @if (completed().length > 0) {
+    <button class="secondary" type="button" (click)="requestClearCompleted()">
+      Clear completed
+    </button>
+  }
+</div>
+
+@if (facade.operations().length === 0) {
+  <section class="empty">
+    <strong>✓</strong>
+    <h2>Synchronization queue is clear</h2>
+    <p>Offline order actions will appear here until they are confirmed.</p>
+  </section>
+} @else {
+  <app-queue-operation-list title="Processing" state="processing" [operations]="processing()" />
+  <app-queue-operation-list title="Pending operations" state="pending" [operations]="pending()" />
+  <app-queue-operation-list
+    title="Failed operations"
+    state="failed"
+    [operations]="failed()"
+    (retryRequested)="facade.retryFailed($event)"
+    (removeRequested)="requestRemoveFailed($event)"
+  />
+  <app-queue-operation-list
+    title="Completed history"
+    state="completed"
+    [operations]="completed()"
+  />
+}
+
+@if (confirmation(); as action) {
+  <app-confirmation-dialog
+    [title]="
+      action.type === 'clear-completed' ? 'Clear completed operations?' : 'Remove failed operation?'
+    "
+    [message]="
+      action.type === 'clear-completed'
+        ? 'Completed synchronization history will be removed from this device.'
+        : 'This operation will be removed without being synchronized. The order will keep its reconciled state.'
+    "
+    [confirmLabel]="action.type === 'clear-completed' ? 'Clear history' : 'Remove operation'"
+    [dangerous]="action.type === 'remove-failed'"
+    (confirmed)="confirmAction()"
+    (cancelled)="confirmation.set(null)"
+  />
+}
