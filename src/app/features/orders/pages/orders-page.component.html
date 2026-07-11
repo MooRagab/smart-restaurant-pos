@@ -1,0 +1,63 @@
+<header class="page-heading">
+  <div>
+    <span>Operations · Live workspace</span>
+    <h1>Live Orders</h1>
+    <p>Monitor every order, surface delays, and keep service moving across all channels.</p>
+  </div>
+  <div class="live-indicator" role="status">
+    <span aria-hidden="true"></span>Live updates active
+  </div>
+</header>
+
+@let state = loadState();
+@if (state.status === 'loading' || state.status === 'idle') {
+  <app-order-workspace-state state="loading" />
+} @else if (state.status === 'error') {
+  <app-order-workspace-state state="error" [error]="state.error" (retry)="retryLoad()" />
+} @else if (state.status === 'empty') {
+  <app-order-workspace-state state="empty" (clearFilters)="clearFilters()" />
+} @else {
+  <app-order-summary [summary]="summary()" />
+  <app-order-filters
+    [filters]="filters()"
+    [resultCount]="visibleOrders().length"
+    (statusChanged)="setStatus($event)"
+    (channelToggled)="toggleChannel($event)"
+    (priorityToggled)="togglePriority($event)"
+    (searchChanged)="setSearch($event)"
+    (sortChanged)="setSort($event)"
+    (cleared)="clearFilters()"
+  />
+
+  @if (visibleOrders().length === 0) {
+    <app-order-workspace-state state="empty" (clearFilters)="clearFilters()" />
+  } @else {
+    <app-order-list
+      [orders]="visibleOrders()"
+      [currentTime]="currentTime()"
+      (selected)="selectOrder($event)"
+    />
+  }
+}
+
+@if (selectedOrder(); as order) {
+  <app-order-detail-drawer
+    [order]="order"
+    [transitions]="selectedTransitions()"
+    [currentTime]="currentTime()"
+    (closed)="closeDetails()"
+    (transitionRequested)="transition($event)"
+  >
+    <app-ai-assistant-panel
+      [state]="aiState()"
+      [simulationOutcome]="aiSimulationOutcome()"
+      [slowStreaming]="aiSlowStreaming()"
+      (generateRequested)="generateRecommendation()"
+      (retryRequested)="retryRecommendation()"
+      (cancelRequested)="cancelRecommendation()"
+      (resetRequested)="resetRecommendation()"
+      (simulationOutcomeChanged)="setAiSimulationOutcome($event)"
+      (slowStreamingChanged)="setAiSlowStreaming($event)"
+    />
+  </app-order-detail-drawer>
+}

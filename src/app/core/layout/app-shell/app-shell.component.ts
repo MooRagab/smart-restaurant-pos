@@ -8,14 +8,14 @@ import { ConnectivityService } from '../../connectivity/connectivity.service';
 
 const SHELL_DATA: ApplicationShell = {
   branches: [
-    { id: 'pearl', name: 'The Pearl', location: 'Porto Arabia' },
-    { id: 'west-bay', name: 'West Bay', location: 'Diplomatic Area' },
-    { id: 'lusail', name: 'Lusail Marina', location: 'Marina District' },
+    { id: 'nasr-city', name: 'Nasr City', location: 'Abbas El Akkad' },
+    { id: 'new-cairo', name: 'New Cairo', location: 'Fifth Settlement' },
+    { id: 'sheikh-zayed', name: 'Sheikh Zayed', location: 'Arkan Plaza' },
   ],
   currentUser: {
-    id: 'usr-amina',
-    displayName: 'Amina Khalid',
-    initials: 'AK',
+    id: 'usr-mohamed-ragab',
+    displayName: 'Mohamed Ragab',
+    initials: 'MR',
     role: 'Branch Manager',
   },
   navigation: [

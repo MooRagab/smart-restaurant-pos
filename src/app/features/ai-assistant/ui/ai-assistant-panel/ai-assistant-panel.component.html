@@ -1,0 +1,122 @@
+@let viewState = state();
+<section class="assistant" aria-labelledby="ai-assistant-title">
+  <header class="assistant__header">
+    <div class="assistant__title">
+      <span class="assistant__mark" aria-hidden="true">AI</span>
+      <div>
+        <h3 id="ai-assistant-title">Order Assistant</h3>
+        <p>Operational insight for this order</p>
+      </div>
+    </div>
+    @if (viewState.status === 'streaming') {
+      <span class="stream-indicator"><span aria-hidden="true"></span>Streaming</span>
+    }
+  </header>
+
+  <div class="assistant__body" aria-live="polite" aria-atomic="false">
+    @switch (viewState.status) {
+      @case ('idle') {
+        <div class="message">
+          <p>Generate a recommendation for sales opportunities, risks, or missing information.</p>
+          <button class="primary" type="button" (click)="generateRequested.emit()">
+            Generate recommendation
+          </button>
+        </div>
+      }
+      @case ('loading') {
+        <div class="loading" role="status">
+          <span class="spinner" aria-hidden="true"></span>
+          <div>
+            <strong>Analyzing order</strong>
+            <p>Checking items, channel, timing, and kitchen signals…</p>
+          </div>
+        </div>
+        <button class="secondary" type="button" (click)="cancelRequested.emit()">Cancel</button>
+      }
+      @case ('streaming') {
+        <div class="recommendation recommendation--streaming">
+          <div class="recommendation__meta">
+            <span class="type" [attr.data-type]="viewState.type">{{
+              typeLabel(viewState.type)
+            }}</span>
+            <span class="severity" [attr.data-severity]="viewState.severity">{{
+              viewState.severity
+            }}</span>
+          </div>
+          <p>{{ viewState.partialContent }}<span class="cursor" aria-hidden="true"></span></p>
+        </div>
+        <button class="secondary" type="button" (click)="cancelRequested.emit()">
+          Cancel generation
+        </button>
+      }
+      @case ('success') {
+        <div class="recommendation" [class.recommendation--stale]="viewState.recommendation.stale">
+          <div class="recommendation__meta">
+            <span class="type" [attr.data-type]="viewState.recommendation.type">
+              {{ typeLabel(viewState.recommendation.type) }}
+            </span>
+            <span class="severity" [attr.data-severity]="viewState.recommendation.severity">
+              {{ viewState.recommendation.severity }}
+            </span>
+          </div>
+          @if (viewState.recommendation.stale) {
+            <div class="stale-notice">
+              Order conditions changed. Generate a fresh recommendation.
+            </div>
+          }
+          <p>{{ viewState.recommendation.content }}</p>
+          <small>Generated {{ date(viewState.recommendation.generatedAt) }}</small>
+        </div>
+        <button class="secondary" type="button" (click)="generateRequested.emit()">
+          Regenerate
+        </button>
+      }
+      @case ('empty') {
+        <div class="message">
+          <strong>No recommendation right now</strong>
+          <p>The assistant found no actionable risk or sales opportunity for this order.</p>
+          <small>Checked {{ date(viewState.generatedAt) }}</small>
+        </div>
+        <button class="secondary" type="button" (click)="retryRequested.emit()">Check again</button>
+      }
+      @case ('error') {
+        <div class="message message--error" role="alert">
+          <strong>Recommendation failed</strong>
+          <p>{{ viewState.error.message }}</p>
+        </div>
+        <button class="primary" type="button" (click)="retryRequested.emit()">Retry</button>
+      }
+      @case ('cancelled') {
+        <div class="message">
+          <strong>Generation cancelled</strong>
+          <p>No partial recommendation was saved.</p>
+        </div>
+        <button class="primary" type="button" (click)="generateRequested.emit()">
+          Generate again
+        </button>
+      }
+    }
+  </div>
+
+  @if (developmentMode) {
+    <details class="simulation">
+      <summary>Development simulation</summary>
+      <div class="simulation__controls">
+        <label>
+          <span>Next result</span>
+          <select [value]="simulationOutcome()" (change)="onOutcomeChange($event)">
+            <option value="auto">Automatic</option>
+            <option value="success">Force success</option>
+            <option value="failure">Force failure</option>
+            <option value="empty">Force empty</option>
+          </select>
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" [checked]="slowStreaming()" (change)="onSlowChange($event)" />
+          Slow streaming
+        </label>
+        <button type="button" (click)="resetRequested.emit()">Reset state</button>
+      </div>
+    </details>
+  }
+</section>

@@ -1,0 +1,47 @@
+<div class="list" role="list" aria-label="Live orders">
+  @for (order of orders(); track order.id) {
+    <button class="order" type="button" role="listitem" (click)="selected.emit(order.id)">
+      <span class="order__identity">
+        <strong>{{ order.orderNumber }}</strong>
+        <small>{{ order.customerName ?? 'Counter guest' }}</small>
+      </span>
+
+      <span class="order__badges">
+        <app-order-badge [value]="order.status" />
+        <app-order-badge [value]="order.channel" />
+        @if (order.priority !== 'normal') {
+          <app-order-badge [value]="order.priority" />
+        }
+      </span>
+
+      <span class="order__items">
+        <strong>{{ order.items.length }} {{ order.items.length === 1 ? 'item' : 'items' }}</strong>
+        <small>{{ order.items[0]?.name }}</small>
+      </span>
+
+      <span class="order__signals">
+        @if (order.isDelayed) {
+          <span class="signal signal--danger">Delayed</span>
+        }
+        <span class="signal" [attr.data-payment]="order.paymentState">{{
+          order.paymentState
+        }}</span>
+        @if (order.synchronizationState === 'pending') {
+          <span class="signal signal--pending">Syncing</span>
+        } @else if (order.synchronizationState === 'failed') {
+          <span class="signal signal--danger">Sync failed</span>
+        }
+      </span>
+
+      <span class="order__time">
+        <strong>{{ waitingTime(order.createdAt) }}</strong>
+        <small>waiting</small>
+      </span>
+
+      <span class="order__total">
+        <strong>{{ currency(order.totalMinor) }}</strong>
+        <small>View details →</small>
+      </span>
+    </button>
+  }
+</div>

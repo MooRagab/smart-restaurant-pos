@@ -1,0 +1,48 @@
+.badge {
+  display: inline-flex;
+  min-height: 1.65rem;
+  align-items: center;
+  padding: 0 0.55rem;
+  color: var(--color-ink-muted);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 750;
+  white-space: nowrap;
+
+  &[data-value='received'],
+  &[data-value='online'] {
+    color: #345f91;
+    background: #edf4fb;
+    border-color: #c9dcef;
+  }
+
+  &[data-value='preparing'],
+  &[data-value='high'] {
+    color: var(--color-warning-ink);
+    background: var(--color-warning-soft);
+    border-color: var(--color-warning-border);
+  }
+
+  &[data-value='ready'],
+  &[data-value='completed'],
+  &[data-value='walk-in'] {
+    color: var(--color-success-ink);
+    background: var(--color-success-soft);
+    border-color: var(--color-success-border);
+  }
+
+  &[data-value='urgent'],
+  &[data-value='cancelled'] {
+    color: var(--color-danger);
+    background: var(--color-danger-soft);
+    border-color: var(--color-danger-border);
+  }
+
+  &[data-value='delivery'] {
+    color: #76509a;
+    background: #f4eef9;
+    border-color: #ddcdec;
+  }
+}

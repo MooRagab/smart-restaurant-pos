@@ -1,10 +1,10 @@
-const currencyFormatter = new Intl.NumberFormat('en-QA', {
+const currencyFormatter = new Intl.NumberFormat('en-EG', {
   style: 'currency',
-  currency: 'QAR',
+  currency: 'EGP',
   minimumFractionDigits: 2,
 });
 
-const dateFormatter = new Intl.DateTimeFormat('en-QA', {
+const dateFormatter = new Intl.DateTimeFormat('en-EG', {
   dateStyle: 'medium',
   timeStyle: 'short',
 });

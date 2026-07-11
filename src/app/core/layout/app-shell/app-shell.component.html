@@ -24,7 +24,33 @@
           [attr.aria-label]="navigationCollapsed() ? item.label : null"
           (click)="closeMobileNavigation()"
         >
-          <span class="navigation__icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
+          <span class="navigation__icon" aria-hidden="true">
+            @switch (item.icon) {
+              @case ('orders') {
+                <svg viewBox="0 0 24 24">
+                  <path d="M7 3h10a2 2 0 0 1 2 2v16l-3-2-4 2-4-2-3 2V5a2 2 0 0 1 2-2Z" />
+                  <path d="M9 8h6M9 12h6" />
+                </svg>
+              }
+              @case ('products') {
+                <svg viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="m16 16 5 5" />
+                </svg>
+              }
+              @case ('kitchen') {
+                <svg viewBox="0 0 24 24">
+                  <path d="M6 3v8M9 3v8M6 7h3M7.5 11v10M15 3v18M15 3c4 2 4 8 0 10" />
+                </svg>
+              }
+              @case ('queue') {
+                <svg viewBox="0 0 24 24">
+                  <path d="M20 12a8 8 0 1 1-2.3-5.7L20 8" />
+                  <path d="M20 3v5h-5M12 7v5l3 2" />
+                </svg>
+              }
+            }
+          </span>
           <span class="navigation__label">{{ item.label }}</span>
           @if (item.icon === 'queue' && pendingCount() > 0) {
             <span class="navigation__count">{{ pendingCount() }}</span>
@@ -36,7 +62,7 @@
     <div class="sidebar__footer">
       <span class="sidebar__eyebrow">Workspace</span>
       <strong>Sahm Operations</strong>
-      <span>Qatar · QAR</span>
+      <span>Egypt · EGP</span>
     </div>
   </aside>
 

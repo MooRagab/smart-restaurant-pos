@@ -1,0 +1,83 @@
+<section class="filters" aria-label="Order filters">
+  <div class="status-tabs" role="group" aria-label="Filter by order status">
+    <button
+      type="button"
+      [class.active]="filters().status === 'all'"
+      (click)="statusChanged.emit('all')"
+    >
+      All
+    </button>
+    @for (status of statuses; track status) {
+      <button
+        type="button"
+        [class.active]="filters().status === status"
+        (click)="statusChanged.emit(status)"
+      >
+        {{ label(status) }}
+      </button>
+    }
+  </div>
+
+  <div class="filter-row">
+    <label class="search">
+      <span class="visually-hidden">Search orders</span>
+      <span aria-hidden="true">⌕</span>
+      <input
+        type="search"
+        placeholder="Order number or customer"
+        [value]="filters().searchTerm"
+        (input)="onSearch($event)"
+      />
+    </label>
+
+    <div class="chip-group" aria-label="Channel filters">
+      @for (channel of channels; track channel) {
+        <button
+          type="button"
+          class="chip"
+          [class.active]="filters().channels.includes(channel)"
+          [attr.aria-pressed]="filters().channels.includes(channel)"
+          (click)="channelToggled.emit(channel)"
+        >
+          {{ label(channel) }}
+        </button>
+      }
+    </div>
+
+    <div class="chip-group" aria-label="Priority filters">
+      @for (priority of priorities; track priority) {
+        <button
+          type="button"
+          class="chip"
+          [class.active]="filters().priorities.includes(priority)"
+          [attr.aria-pressed]="filters().priorities.includes(priority)"
+          (click)="priorityToggled.emit(priority)"
+        >
+          {{ label(priority) }}
+        </button>
+      }
+    </div>
+
+    <label class="sort">
+      <span>Sort</span>
+      <select [value]="filters().sort" (change)="onSort($event)">
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
+        <option value="highest-priority">Highest priority</option>
+        <option value="longest-waiting">Longest waiting</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="filter-meta">
+    <span>{{ resultCount() }} matching orders</span>
+    @if (
+      filters().status !== 'all' ||
+      filters().channels.length > 0 ||
+      filters().priorities.length > 0 ||
+      filters().searchTerm.length > 0
+    ) {
+      <button type="button" (click)="cleared.emit()">Clear all filters</button>
+    }
+  </div>
+</section>

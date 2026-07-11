@@ -1,0 +1,24 @@
+@if (state() === 'loading') {
+  <section class="skeletons" aria-label="Loading orders" aria-busy="true">
+    @for (row of [1, 2, 3, 4, 5]; track row) {
+      <div class="skeleton"><span></span><span></span><span></span><span></span></div>
+    }
+  </section>
+} @else {
+  <section class="message" role="status">
+    <span class="message__mark" aria-hidden="true">{{ state() === 'error' ? '!' : '○' }}</span>
+    <h2>{{ state() === 'error' ? 'Orders could not be loaded' : 'No matching orders' }}</h2>
+    <p>
+      {{
+        state() === 'error'
+          ? (error()?.message ?? 'Please try loading the workspace again.')
+          : 'Adjust or clear the active filters to see more orders.'
+      }}
+    </p>
+    @if (state() === 'error') {
+      <button type="button" (click)="retry.emit()">Retry loading</button>
+    } @else {
+      <button type="button" (click)="clearFilters.emit()">Clear filters</button>
+    }
+  </section>
+}

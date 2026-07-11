@@ -275,13 +275,13 @@ Connectivity simulation exposes online, offline, and unstable modes. Unstable mo
 - **KitchenLoad**: percentage, status, active/delayed counts, average preparation duration, timestamp, history, and revision.
 - **KitchenStation**: ID/name, capacity, active work, load percentage, availability, and status.
 - **AIRecommendation**: ID, order/revision, recommendation kind, severity, content, generated timestamp, kitchen revision, and stale state.
-- **Product**: ID, name, category, price in QAR minor units, availability, preparation duration, dietary tags, allergens, popularity, and icon key.
+- **Product**: ID, name, category, price in EGP minor units, availability, preparation duration, dietary tags, allergens, popularity, and icon key.
 - **QueuedOperation**: generic discriminated operation union with common queue metadata and operation-specific typed payload.
 - **ConnectivityState**: mode, effective online status, transition timestamp, and optional instability information.
 - **AppError**: stable error code, user-safe message, retry classification, and internal cause available only to the logger.
 - **AsyncState<T>**: discriminated union appropriate to each workflow, with streaming fields only where meaningful.
 
-Branded/string ID aliases and readonly properties will reduce accidental model mixing. Monetary values should use integer dirhams and a centralized QAR formatter; durations and timestamps should use centralized formatting utilities and an injectable clock.
+Branded/string ID aliases and readonly properties will reduce accidental model mixing. Monetary values should use integer piastres and a centralized EGP formatter; durations and timestamps should use centralized formatting utilities and an injectable clock.
 
 ## 10. Feature Implementation Order
 

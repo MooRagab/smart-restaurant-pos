@@ -1,59 +1,55 @@
-# SahmFoodPos
+# Sahm Food Smart Order Workspace
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.6.
+Browser-based restaurant POS prototype built with Angular 22, standalone components, strict TypeScript, Signals, RxJS, SCSS, ESLint, Prettier, and Vitest.
 
-## Development server
+## Setup
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Use Node `24.15.0` (see `.nvmrc`), then run:
 
 ```bash
-ng generate component component-name
+npm install
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+The application is available at `http://localhost:4200` and redirects to `/orders`.
+
+## Commands
 
 ```bash
-ng generate --help
+npm start                  # Development server
+npm run typecheck          # Strict TypeScript check
+npm run lint               # TypeScript and Angular template linting
+npm test -- --watch=false  # Vitest suite once
+npm run build              # Production build
+npm run format:check       # Formatting verification
 ```
 
-## Building
+## Architecture
 
-To build the project run:
-
-```bash
-ng build
+```mermaid
+flowchart LR
+  Page[Lazy route page] --> Facade[Feature facade]
+  Facade --> Store[Private Signal store]
+  Facade --> Repository[Typed data-access port]
+  Facade --> Events[RxJS live events]
+  Store --> Domain[Models, policies, selectors]
+  Page --> UI[OnPush presentation components]
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Feature folders separate `domain`, `data-access`, `state`, `ui`, and `pages`. Writable Signals remain private to focused feature stores. Pages compose readonly view state, while presentation components communicate through typed inputs and outputs.
 
-## Running unit tests
+## Live Orders
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+The Live Orders route loads 56 deterministic, realistic orders across walk-in, delivery, and online channels. Pure selectors handle status, channel, priority, search, and sort criteria outside templates. A typed RxJS event source periodically adds orders and changes status, priority, delay, and payment information.
 
-```bash
-ng test
-```
+Status rules live in a pure domain policy. User status changes are applied optimistically, marked pending, and sent through a typed repository command with an idempotency key. Success confirms the revision; simulated failure rolls back the previous status and emits a user notification. Repeated commands are suppressed while synchronization is pending. The repository boundary is ready for the persistent offline queue planned for a later stage.
 
-## Running end-to-end tests
+## AI Order Assistant
 
-For end-to-end (e2e) testing, run:
+The selected order drawer includes a typed AI assistant with idle, loading, streaming, success, empty, error, and cancelled states. A dedicated RxJS simulator emits metadata and timed content chunks and supports deterministic success, failure, empty, and slow-stream scenarios. The feature facade owns cancellation, retries, race protection, and stale-result detection; presentation components only render state and emit user actions. Changing the selected order unsubscribes the previous stream so stale responses cannot overwrite the new order.
 
-```bash
-ng e2e
-```
+Development controls inside the panel can force the next outcome, slow streaming, or reset recommendation state without changing production-facing domain rules.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Current scope
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+The application shell, Live Orders workspace, and AI Order Assistant are functional. Product search, kitchen monitoring, and persistent offline synchronization remain staged behind their existing lazy route and architecture boundaries.

@@ -1,0 +1,22 @@
+<section class="summary" aria-label="Order summary">
+  <article>
+    <span>Total orders</span><strong>{{ summary().total }}</strong
+    ><small>All channels</small>
+  </article>
+  <article>
+    <span>Active now</span><strong>{{ summary().active }}</strong
+    ><small>In workflow</small>
+  </article>
+  <article>
+    <span>Preparing</span><strong>{{ summary().preparing }}</strong
+    ><small>Kitchen active</small>
+  </article>
+  <article>
+    <span>Ready</span><strong>{{ summary().ready }}</strong
+    ><small>Awaiting handoff</small>
+  </article>
+  <article class="summary__alert">
+    <span>Delayed</span><strong>{{ summary().delayed }}</strong
+    ><small>Needs attention</small>
+  </article>
+</section>
