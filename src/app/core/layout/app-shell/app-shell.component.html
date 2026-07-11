@@ -1,0 +1,121 @@
+<a class="skip-link" href="#main-content">Skip to workspace</a>
+
+<div
+  class="shell"
+  [class.shell--collapsed]="navigationCollapsed()"
+  [class.shell--mobile-open]="mobileNavigationOpen()"
+>
+  <aside class="sidebar" aria-label="Primary navigation">
+    <div class="brand">
+      <span class="brand__mark" aria-hidden="true">S</span>
+      <span class="brand__copy">
+        <strong>Sahm Food</strong>
+        <small>Smart Workspace</small>
+      </span>
+    </div>
+
+    <nav class="navigation">
+      @for (item of shell.navigation; track item.path) {
+        <a
+          class="navigation__link"
+          [routerLink]="item.path"
+          routerLinkActive="navigation__link--active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          [attr.aria-label]="navigationCollapsed() ? item.label : null"
+          (click)="closeMobileNavigation()"
+        >
+          <span class="navigation__icon" [attr.data-icon]="item.icon" aria-hidden="true"></span>
+          <span class="navigation__label">{{ item.label }}</span>
+          @if (item.icon === 'queue' && pendingCount() > 0) {
+            <span class="navigation__count">{{ pendingCount() }}</span>
+          }
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar__footer">
+      <span class="sidebar__eyebrow">Workspace</span>
+      <strong>Sahm Operations</strong>
+      <span>Qatar · QAR</span>
+    </div>
+  </aside>
+
+  @if (mobileNavigationOpen()) {
+    <button
+      class="backdrop"
+      type="button"
+      aria-label="Close navigation"
+      (click)="closeMobileNavigation()"
+    ></button>
+  }
+
+  <div class="shell__body">
+    <header class="header">
+      <div class="header__start">
+        <button
+          class="icon-button desktop-toggle"
+          type="button"
+          [attr.aria-label]="navigationCollapsed() ? 'Expand navigation' : 'Collapse navigation'"
+          [attr.aria-expanded]="!navigationCollapsed()"
+          (click)="toggleNavigation()"
+        >
+          <span class="menu-icon" aria-hidden="true"></span>
+        </button>
+        <button
+          class="icon-button mobile-toggle"
+          type="button"
+          aria-label="Open navigation"
+          [attr.aria-expanded]="mobileNavigationOpen()"
+          (click)="toggleMobileNavigation()"
+        >
+          <span class="menu-icon" aria-hidden="true"></span>
+        </button>
+
+        <label class="branch-picker">
+          <span>Active branch</span>
+          <select [value]="selectedBranchId()" (change)="selectBranch($event)">
+            @for (branch of shell.branches; track branch.id) {
+              <option [value]="branch.id">{{ branch.name }} · {{ branch.location }}</option>
+            }
+          </select>
+        </label>
+      </div>
+
+      <div class="header__end">
+        <a class="status-pill status-pill--pending" routerLink="/offline-queue">
+          <span aria-hidden="true">↻</span>
+          <span
+            ><strong>{{ pendingCount() }}</strong> pending</span
+          >
+        </a>
+        <div
+          class="status-pill"
+          [class.status-pill--offline]="!connection().isOnline"
+          [class.status-pill--unstable]="connection().mode === 'unstable'"
+          role="status"
+        >
+          <span class="status-dot" aria-hidden="true"></span>
+          {{ connectionLabel() }}
+        </div>
+        <div class="user">
+          <span class="user__avatar" aria-hidden="true">{{ shell.currentUser.initials }}</span>
+          <span class="user__copy">
+            <strong>{{ shell.currentUser.displayName }}</strong>
+            <small>{{ shell.currentUser.role }}</small>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-content" class="workspace" tabindex="-1">
+      <div class="workspace__context">
+        <span class="workspace__branch">{{ selectedBranch().name }}</span>
+        <span aria-hidden="true">/</span>
+        <span>{{ selectedBranch().location }}</span>
+      </div>
+      <router-outlet />
+    </main>
+  </div>
+</div>
+
+<app-toast-container />

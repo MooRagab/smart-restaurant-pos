@@ -1,0 +1,10 @@
+<section class="toasts" aria-label="Notifications" aria-live="polite">
+  @for (notification of notifications(); track notification.id) {
+    <article class="toast" [attr.data-tone]="notification.tone">
+      <span>{{ notification.message }}</span>
+      <button type="button" aria-label="Dismiss notification" (click)="dismiss(notification.id)">
+        ×
+      </button>
+    </article>
+  }
+</section>

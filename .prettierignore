@@ -1,0 +1,7 @@
+dist
+coverage
+node_modules
+package-lock.json
+AGENTS.md
+SMART_POS_SPEC.md
+IMPLEMENTATION_PLAN.md
