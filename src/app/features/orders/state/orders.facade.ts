@@ -17,6 +17,7 @@ import {
 } from '../domain/order.model';
 import { validateStatusTransition } from '../domain/order-transition.policy';
 import { OrdersStore } from './orders.store';
+import { KitchenOrdersCoordinator } from './kitchen-orders.coordinator';
 
 @Injectable()
 export class OrdersFacade {
@@ -26,6 +27,7 @@ export class OrdersFacade {
   private readonly notifications = inject(NotificationService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly idGenerator = new IdGenerator();
+  private readonly kitchenCoordinator = inject(KitchenOrdersCoordinator);
   private readonly inFlightOrders = new Set<OrderId>();
 
   readonly orders = this.store.orders;
@@ -52,7 +54,10 @@ export class OrdersFacade {
       .loadOrders()
       .pipe(take(1), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (orders) => this.store.setOrders(orders),
+        next: (orders) => {
+          this.store.setOrders(orders);
+          this.kitchenCoordinator.applyCurrentLoad();
+        },
         error: (error: AppError) => this.store.setLoadError(error),
       });
   }

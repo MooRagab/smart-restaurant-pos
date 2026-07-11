@@ -1,0 +1,114 @@
+.history {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.8rem;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+
+  > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.15rem;
+    border-bottom: 1px solid var(--color-border);
+
+    span {
+      color: var(--color-brand);
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 0.2rem 0 0;
+      font-size: 0.95rem;
+    }
+    small {
+      color: var(--color-ink-subtle);
+      font-size: 0.62rem;
+    }
+  }
+}
+
+.chart {
+  position: relative;
+  height: 16rem;
+  margin: 1.25rem 1.15rem 0.75rem 2.75rem;
+
+  &__guide {
+    position: absolute;
+    right: 0;
+    left: 0;
+    border-top: 1px dashed var(--color-border);
+
+    span {
+      position: absolute;
+      top: -0.45rem;
+      left: -2.5rem;
+      color: var(--color-ink-subtle);
+      font-size: 0.55rem;
+    }
+    &--high {
+      top: 0;
+    }
+    &--mid {
+      top: 50%;
+    }
+  }
+}
+
+.bars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: stretch;
+  gap: clamp(0.2rem, 1vw, 0.55rem);
+}
+
+.bar-column {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0.35rem;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  small {
+    height: 1.4rem;
+    padding-top: 0.35rem;
+    color: var(--color-ink-subtle);
+    font-size: 0.5rem;
+    white-space: nowrap;
+  }
+}
+
+.bar {
+  min-height: 0.2rem;
+  background: var(--color-brand);
+  border-radius: 0.25rem 0.25rem 0 0;
+  transition: height 300ms ease;
+
+  &[data-status='busy'] {
+    background: var(--color-warning);
+  }
+  &[data-status='critical'] {
+    background: var(--color-danger);
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    transition: none;
+  }
+}

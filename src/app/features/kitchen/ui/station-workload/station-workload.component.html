@@ -1,0 +1,36 @@
+<section class="panel" aria-labelledby="station-workload-title">
+  <header>
+    <div>
+      <span>Live capacity</span>
+      <h2 id="station-workload-title">Station workload</h2>
+    </div>
+    <small>Updates automatically</small>
+  </header>
+  <div class="stations">
+    @for (station of stations(); track station.id) {
+      <article class="station">
+        <div class="station__header">
+          <div>
+            <strong>{{ label(station.name) }}</strong
+            ><small>{{ station.activeTickets }} of {{ station.capacity }} tickets</small>
+          </div>
+          <span [attr.data-availability]="station.availability">{{ station.availability }}</span>
+        </div>
+        <div
+          class="progress"
+          role="progressbar"
+          [attr.aria-label]="label(station.name) + ' workload'"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-valuenow]="station.loadPercentage"
+        >
+          <span [style.width.%]="station.loadPercentage"></span>
+        </div>
+        <div class="station__footer">
+          <span>{{ station.loadPercentage }}% load</span
+          ><span>{{ station.estimatedPreparationMinutes }} min estimate</span>
+        </div>
+      </article>
+    }
+  </div>
+</section>

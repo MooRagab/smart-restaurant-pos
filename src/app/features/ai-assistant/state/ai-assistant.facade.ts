@@ -115,6 +115,10 @@ export class AiAssistantFacade {
     this.controls.setSlow(slow);
   }
 
+  invalidateForKitchenChange(): void {
+    this.store.markStale();
+  }
+
   private handleEvent(request: ActiveRequest, event: AiStreamEvent): void {
     if (!this.isActive(request)) {
       return;

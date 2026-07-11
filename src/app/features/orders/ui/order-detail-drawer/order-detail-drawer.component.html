@@ -57,6 +57,10 @@
         <dd>{{ waitingTime() }}</dd>
       </div>
       <div>
+        <dt>Prep estimate</dt>
+        <dd>{{ order().estimatedPreparationMinutes }} min</dd>
+      </div>
+      <div>
         <dt>Payment</dt>
         <dd class="capitalize">{{ order().paymentState }}</dd>
       </div>

@@ -1,0 +1,31 @@
+<section class="metrics" aria-label="Kitchen metrics">
+  <article class="load-card" [attr.data-status]="load().status">
+    <div class="load-ring" [style.--load]="load().overallLoadPercentage + '%'">
+      <strong>{{ load().overallLoadPercentage }}%</strong><span>load</span>
+    </div>
+    <div>
+      <span>Overall status</span><strong class="capitalize">{{ load().status }}</strong
+      ><small>Updated live</small>
+    </div>
+  </article>
+  <article>
+    <span>Active orders</span><strong>{{ load().activeOrders }}</strong
+    ><small>Across all stations</small>
+  </article>
+  <article>
+    <span>Average prep</span><strong>{{ load().averagePreparationMinutes }}m</strong
+    ><small>Current estimate</small>
+  </article>
+  <article class="alert">
+    <span>Delayed orders</span><strong>{{ load().delayedOrders }}</strong
+    ><small>Needs attention</small>
+  </article>
+  <article>
+    <span>Available stations</span><strong>{{ load().availableStations }}</strong
+    ><small>Ready for work</small>
+  </article>
+  <article>
+    <span>Busy stations</span><strong>{{ load().busyStations }}</strong
+    ><small>At 75% or more</small>
+  </article>
+</section>

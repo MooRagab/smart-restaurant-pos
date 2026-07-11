@@ -1,0 +1,33 @@
+<section class="history" aria-labelledby="workload-history-title">
+  <header>
+    <div>
+      <span>Recent trend</span>
+      <h2 id="workload-history-title">Workload history</h2>
+    </div>
+    <small>Last {{ history().length }} readings</small>
+  </header>
+  <div class="chart" role="img" aria-label="Kitchen workload percentage over recent readings">
+    <div class="chart__guide chart__guide--high"><span>100%</span></div>
+    <div class="chart__guide chart__guide--mid"><span>50%</span></div>
+    <div class="bars">
+      @for (point of history(); track $index) {
+        <div
+          class="bar-column"
+          [attr.title]="time(point.timestamp) + ': ' + point.loadPercentage + '%'"
+        >
+          <span
+            class="bar"
+            [attr.data-status]="point.status"
+            [style.height.%]="point.loadPercentage"
+          ></span>
+          <small>{{ $last || $index % 4 === 0 ? time(point.timestamp) : '' }}</small>
+        </div>
+      }
+    </div>
+  </div>
+  <ol class="visually-hidden">
+    @for (point of history(); track $index) {
+      <li>{{ time(point.timestamp) }}: {{ point.loadPercentage }}%, {{ point.status }}</li>
+    }
+  </ol>
+</section>

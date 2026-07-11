@@ -50,6 +50,12 @@ The selected order drawer includes a typed AI assistant with idle, loading, stre
 
 Development controls inside the panel can force the next outcome, slow streaming, or reset recommendation state without changing production-facing domain rules.
 
+## Kitchen Load Monitor
+
+The Kitchen route exposes live overall load, active and delayed order counts, preparation-time estimates, station capacity, and a bounded workload history. Five typed stations—Grill, Fryer, Drinks, Desserts, and Packaging—update through a deterministic RxJS event simulator. The history chart uses semantic HTML and CSS with an assistive-text equivalent instead of a charting dependency.
+
+A typed application coordinator listens for kitchen load events while the Orders workspace is active. Pure order policies calculate delays, priority changes, and revised preparation estimates; the coordinator updates order state and invalidates an existing AI recommendation without kitchen services referencing order or AI components. Development-only controls can increase/decrease load, select Normal/Busy/Critical conditions, and reset history.
+
 ## Current scope
 
-The application shell, Live Orders workspace, and AI Order Assistant are functional. Product search, kitchen monitoring, and persistent offline synchronization remain staged behind their existing lazy route and architecture boundaries.
+The application shell, Live Orders workspace, AI Order Assistant, and Kitchen Load Monitor are functional. Product search and persistent offline synchronization remain staged behind their existing lazy route and architecture boundaries.

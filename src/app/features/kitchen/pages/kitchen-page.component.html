@@ -1,0 +1,26 @@
+<header class="page-heading">
+  <div>
+    <span>Kitchen · Live operations</span>
+    <h1>Kitchen Load Monitor</h1>
+    <p>Track station capacity, preparation pressure, and service delays in real time.</p>
+  </div>
+  <div class="live-indicator" role="status">
+    <span aria-hidden="true"></span>Live updates active
+  </div>
+</header>
+
+@if (developmentMode) {
+  <app-kitchen-simulation-controls
+    (increaseRequested)="increaseLoad()"
+    (decreaseRequested)="decreaseLoad()"
+    (statusRequested)="setStatus($event)"
+    (historyResetRequested)="resetHistory()"
+  />
+}
+
+<app-kitchen-metrics [load]="load()" />
+
+<div class="workspace-grid">
+  <app-station-workload [stations]="load().stations" />
+  <app-workload-history [history]="load().history" />
+</div>

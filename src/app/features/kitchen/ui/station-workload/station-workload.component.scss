@@ -1,0 +1,113 @@
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.8rem;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+
+  > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.15rem;
+    border-bottom: 1px solid var(--color-border);
+
+    span,
+    small {
+      color: var(--color-ink-subtle);
+      font-size: 0.62rem;
+    }
+
+    span {
+      color: var(--color-brand);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 0.2rem 0 0;
+      font-size: 0.95rem;
+    }
+  }
+}
+
+.stations {
+  display: grid;
+  padding: 0.25rem 1.15rem 0.75rem;
+}
+
+.station {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--color-border);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  &__header,
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  &__header {
+    > div {
+      display: grid;
+      gap: 0.15rem;
+    }
+    strong {
+      font-size: 0.75rem;
+    }
+    small {
+      color: var(--color-ink-subtle);
+      font-size: 0.6rem;
+    }
+    > span {
+      padding: 0.2rem 0.4rem;
+      color: var(--color-success-ink);
+      background: var(--color-success-soft);
+      border-radius: 999px;
+      font-size: 0.58rem;
+      font-weight: 750;
+      text-transform: capitalize;
+    }
+    > span[data-availability='busy'] {
+      color: var(--color-warning-ink);
+      background: var(--color-warning-soft);
+    }
+    > span[data-availability='offline'] {
+      color: var(--color-danger);
+      background: var(--color-danger-soft);
+    }
+  }
+
+  &__footer {
+    margin-top: 0.4rem;
+    color: var(--color-ink-subtle);
+    font-size: 0.59rem;
+  }
+}
+
+.progress {
+  height: 0.42rem;
+  margin-top: 0.55rem;
+  background: var(--color-surface-muted);
+  border-radius: 999px;
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: var(--color-brand);
+    border-radius: inherit;
+    transition: width 300ms ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress span {
+    transition: none;
+  }
+}

@@ -2,6 +2,7 @@ import { Injectable, computed, signal } from '@angular/core';
 
 import { AppError } from '../../../shared/types/app-error';
 import { AsyncState } from '../../../shared/types/async-state';
+import { KitchenLoad } from '../../kitchen/domain/kitchen.model';
 import { OrderLiveEvent } from '../data-access/order-live-event.service';
 import {
   DEFAULT_ORDER_FILTERS,
@@ -14,6 +15,7 @@ import {
   OrderStatus,
 } from '../domain/order.model';
 import { selectOrderSummary, selectVisibleOrders } from '../domain/order-selectors';
+import { calculateKitchenOrderImpact } from '../domain/kitchen-order.policy';
 import {
   getAvailableTransitions,
   validateStatusTransition,
@@ -167,6 +169,31 @@ export class OrdersStore {
         });
         break;
     }
+  }
+
+  applyKitchenLoad(load: KitchenLoad): void {
+    this.entitiesSignal.update((entities) => {
+      const next = new Map(entities);
+      for (const [orderId, order] of entities) {
+        const impact = calculateKitchenOrderImpact(order, load);
+        if (
+          order.isDelayed !== impact.isDelayed ||
+          order.priority !== impact.priority ||
+          order.estimatedPreparationMinutes !== impact.estimatedPreparationMinutes
+        ) {
+          next.set(orderId, {
+            ...order,
+            ...impact,
+            aiRecommendationState:
+              order.aiRecommendationState === 'available'
+                ? 'outdated'
+                : order.aiRecommendationState,
+            revision: order.revision + 1,
+          });
+        }
+      }
+      return next;
+    });
   }
 
   getOrder(orderId: OrderId): Order | undefined {

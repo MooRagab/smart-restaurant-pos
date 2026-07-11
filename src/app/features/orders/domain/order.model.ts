@@ -29,6 +29,7 @@ export type Order = Readonly<{
   priority: OrderPriority;
   paymentState: PaymentState;
   isDelayed: boolean;
+  estimatedPreparationMinutes: number;
   synchronizationState: SynchronizationState;
   aiRecommendationState: AiRecommendationState;
   revision: number;

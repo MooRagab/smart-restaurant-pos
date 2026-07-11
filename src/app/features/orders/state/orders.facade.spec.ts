@@ -14,6 +14,7 @@ import {
 } from '../data-access/orders.repository';
 import { Order } from '../domain/order.model';
 import { OrdersFacade } from './orders.facade';
+import { KitchenOrdersCoordinator } from './kitchen-orders.coordinator';
 import { OrdersStore } from './orders.store';
 
 class ControlledOrdersRepository implements OrdersRepository {
@@ -53,6 +54,7 @@ describe('OrdersFacade optimistic status workflow', () => {
       providers: [
         OrdersStore,
         OrdersFacade,
+        { provide: KitchenOrdersCoordinator, useValue: { applyCurrentLoad: () => undefined } },
         NotificationService,
         ControlledOrdersRepository,
         { provide: ORDERS_REPOSITORY, useExisting: ControlledOrdersRepository },

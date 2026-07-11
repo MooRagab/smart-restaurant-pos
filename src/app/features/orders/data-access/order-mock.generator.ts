@@ -67,6 +67,7 @@ export function createMockOrder(index: number, now = new Date()): Order {
     priority: PRIORITIES[(index * 3) % PRIORITIES.length]!,
     paymentState: PAYMENTS[(index * 7) % PAYMENTS.length]!,
     isDelayed: index % 9 === 0,
+    estimatedPreparationMinutes: 12 + (index % 6) * 3,
     synchronizationState: 'synchronized',
     aiRecommendationState: index % 4 === 0 ? 'available' : 'idle',
     revision: 1,

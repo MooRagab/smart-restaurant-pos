@@ -1,0 +1,11 @@
+<details class="controls">
+  <summary>Development simulation</summary>
+  <div class="controls__body">
+    <button type="button" (click)="increaseRequested.emit()">Increase load</button>
+    <button type="button" (click)="decreaseRequested.emit()">Decrease load</button>
+    <button type="button" (click)="statusRequested.emit('normal')">Set Normal</button>
+    <button type="button" (click)="statusRequested.emit('busy')">Set Busy</button>
+    <button type="button" (click)="statusRequested.emit('critical')">Set Critical</button>
+    <button type="button" (click)="historyResetRequested.emit()">Reset history</button>
+  </div>
+</details>

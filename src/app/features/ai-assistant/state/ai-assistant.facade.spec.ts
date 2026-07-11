@@ -111,6 +111,19 @@ describe('AiAssistantFacade', () => {
     }
   });
 
+  it('invalidates a completed recommendation after a kitchen change', async () => {
+    facade.selectOrder(testOrder(8));
+    facade.setSimulationOutcome('success');
+    facade.generate();
+    await vi.runAllTimersAsync();
+    facade.invalidateForKitchenChange();
+    const state = facade.state();
+    expect(state.status).toBe('success');
+    if (state.status === 'success') {
+      expect(state.recommendation.stale).toBe(true);
+    }
+  });
+
   it('resets recommendation and development controls', () => {
     facade.selectOrder(testOrder(7));
     facade.setSimulationOutcome('empty');
